@@ -147,23 +147,13 @@ def calRoi():
         roi.append(currentRoi)
     print(currentRoi)
 
-def calcProfit():
-    for entry in data:
-        currentProfit = 0
-        currentProfit = entry[2] - entry[1]
-        profit.append(currentProfit)
-    print(currentProfit)
-
 def validEntry(entry):
-    for item in entry:
-        if item.isnumeric() == True:
-            pass
-        else:
-            return False # if even one value isnt number stops loop 
-    return True
+    if entry != "":
+        return True
+
 
 def updateData():  # Adds data in inputs to store
-    if validEntry([quaterSelect.get(), costInput.get(), saleInput.get()]):
+    if validEntry(quaterSelect.get() and costInput.get() and saleInput.get()):
         errorDisplay.config(text="Update Successful !")
         data.append([quaterSelect.get(), costInput.get(), saleInput.get()])
         updateTable()
@@ -178,7 +168,8 @@ def updateTable():
     for item in data:
         # Adds values to table from data
         mainTable.insert(
-            parent="", index=tk.END, values=(item[0], f"£ {item[1]}", f"£ {item[2]}"))
+            parent="", index=tk.END, values=(item[0], f"£ {item[1]}", f"£ {item[2]}")
+        )
 
 
 # run
