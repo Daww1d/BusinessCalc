@@ -54,6 +54,9 @@ data = []
 profit = []
 roi = []
 
+totalRoi = 0
+netProfit = 0
+
 #style = ttk.Style()
 #style.theme_use("xpnative")
 window.tk.call("source", "Azure/azure.tcl")
@@ -97,6 +100,11 @@ mainTable = ttk.Treeview(updateRight, columns=("Quater", "Costs", "Revenue"), sh
 mainTable.heading("Quater", text="Quater")
 mainTable.heading("Costs", text="Cost")
 mainTable.heading("Revenue", text="Revenue")
+roiDisplay = ttk.Label(updateRight, text="ROI")
+profitDisplay = ttk.Label(updateRight, text="0")
+profitLabel = ttk.Label(updateRight, text="Profit :")
+roiLabel = ttk.Label(updateRight, text="ROI")
+
 # help frame
 helpInfo = scrolledtext.ScrolledText(help)
 helpInfo.insert(tk.INSERT," Help Section - Business Calculator\n Overview\nThe Business Calculator is a simple application designed to help businesses track their quarterly costs and revenues.\nIt allows users to input financial data, update records, and view an overview of stored information.\nThe application is built using Python's Tkinter library for a user-friendly graphical interface.\n\n Navigation\nThe application consists of three main sections:\n1. Update - Enter and update financial data.\n2. Overview - View a summary of stored data.\n3. Help - Access this guide for assistance.\nTo switch between sections, use the navigation buttons in the header.\n\n Features\n 1. Adding Data\n- Navigate to the Update section by clicking the Update button.\n- Enter the following details:\n  - Quarter: Specify the financial quarter (e.g., Q1, Q2, Q3, Q4).\n  - Costs: Input the total cost for the quarter.\n  - Revenue: Input the total revenue for the quarter.\n- Click the Add Data button to save the information.\n- A message will confirm whether the update was successful or if there was an error.\n\n 2. Updating the Table\n- Click the Update Table button to refresh the displayed data.\n- The table will show all stored quarterly entries with formatted cost and revenue values.\n\n 3. Viewing the Overview\n- Click the Overview button to access a summarized view of all financial data.\n\n 4. Help Section\n- Click the Help button to return to this help guide.\n\n Error Handling\n- If invalid or empty entries are submitted, an error message will appear.\n- Ensure all fields contain valid numerical data before adding an entry.\n\n Troubleshooting\n- If the table does not update, click the Update Table button.\n- If the application is unresponsive, close and restart it.\n- Make sure all input fields contain valid numbers before adding data.\n\nFor further assistance, contact support or refer to the application's documentation.",)
@@ -127,9 +135,15 @@ addDataButton.pack(side="left", expand=True)
 errorDisplay.pack(side="right", expand=True)
 # right side
 mainTable.pack(fill="both", expand=True, padx=30, pady=30)
+roiDisplay.pack(side="left", expand=True)
+profitDisplay.pack(side="right", expand=True)
+roiLabel.pack(side="left", expand=True)
+profitLabel.pack(side="right", expand=True)
 
 # pack help
 helpInfo.pack(side="right", fill="both", expand=True)
+
+
 
 
 # Fucntions
@@ -143,16 +157,34 @@ def changeTab(tab=update):
 def calRoi():
     for entry in data:
         currentRoi = 0
-        currentRoi = (entry[2]- entry[1]) / entry[1]
-        roi.append(currentRoi)
-    print(currentRoi)
+        currentRoi = (int(entry[2])- int(entry[1])) / int(entry[1]) * 100
+        #roi.append(currentRoi)
+        roiLabel.config(text=totalRoi)
+
+def totalRoi():
+    global totalRoi
+    for item in roi:
+        totalRoi += item
+
+    return totalRoi
+
+def totalProfit():
+    global netProfit
+    netProfit = 0
+    print(profit)
+    for item in profit:
+        netProfit += int(item)
+
+    profitDisplay.config(text=netProfit)
 
 def calcProfit():
+    global profit
     for entry in data:
         currentProfit = 0
-        currentProfit = entry[2] - entry[1]
+        currentProfit = int(entry[2]) - int(entry[1])
         profit.append(currentProfit)
-    print(currentProfit)
+    totalProfit()
+    profit = []
 
 def validEntry(entry):
     for item in entry:
@@ -170,6 +202,8 @@ def updateData():  # Adds data in inputs to store
     else:
         errorDisplay.config(text="Invalid Input")
 
+    #calRoi()
+    calcProfit()
 
 def updateTable():
     # removes previous data in table
